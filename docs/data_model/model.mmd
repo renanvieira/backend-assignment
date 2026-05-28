@@ -1,0 +1,22 @@
+erDiagram
+    customers {
+        int id PK
+        timestamp created_at
+    }
+
+    orders {
+        int id PK
+        int customer_id FK
+        text order_number UK
+        timestamp created_at
+    }
+
+    tickets {
+        int id PK
+        int order_id FK
+        text barcode UK
+        timestamp created_at
+    }
+
+    customers ||--o{ orders : "places"
+    orders ||--o{ tickets : "contains"
