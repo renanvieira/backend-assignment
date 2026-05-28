@@ -1,0 +1,10 @@
+/home/renan/projects/assignments/tiqets/.devenv/bootstrap/bootstrapLib.nix
+/home/renan/projects/assignments/tiqets/.devenv/bootstrap/default.nix
+/home/renan/projects/assignments/tiqets/.devenv/bootstrap/resolve-lock.nix
+/home/renan/projects/assignments/tiqets/devenv.local.nix
+/home/renan/projects/assignments/tiqets/devenv.lock
+/home/renan/projects/assignments/tiqets/devenv.nix
+/home/renan/projects/assignments/tiqets/devenv.yaml
+/home/renan/.config/nixpkgs/overlays
+/home/renan/.config/nixpkgs/overlays.nix
+/home/renan/projects/assignments/tiqets/.env
