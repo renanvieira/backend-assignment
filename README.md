@@ -1,61 +1,49 @@
-Tiqets Backend Assignment
-----------
+# Tiqets Backend Assignment: CSV Processor
 
-The script was developed using Python 3.13 but it should work with any version above 3.12.
+A production-ready Python tool to process order and barcode datasets, generate customer voucher summaries, and provide business analytics (Top 5 customers and unused ticket counts).
 
-## Running the script
-There are two ways of running the script: 
+## Features
+- **One-to-Many Mapping**: Correctly handles multiple barcodes per order.
+- **Validation**: Detects and logs duplicate barcodes and orders without barcodes to `stderr`.
+- **Performance**: Optimized with $O(1)$ set lookups for large datasets.
+- **Structured Logging**: Uses standard Python logging with split streams (INFO to `stdout`, ERROR to `stderr`).
 
-### 1. Docker
-Build the container:
-```sh
-$ docker build docker build -t tiqets-assignment .
+---
+
+## Getting Started
+
+### Prerequisites
+- [uv](https://github.com/astral-sh/uv) (Recommended) or Python 3.13+
+- [Docker](https://www.docker.com/) (Optional)
+
+### Installation (Local)
+```bash
+# Install dependencies and setup environment
+uv sync
 ```
 
-Run the container and print the output file contents:
-```sh
-$ docker run --rm --entrypoint sh tiqets-assignment -c "python src/main.py --output ./data/output.csv && cat /app/data/output.csv"
+### Running the Script
+#### 1. Using `uv` (Local)
+```bash
+# Run with default files (data/barcodes.csv and data/orders.csv)
+uv run src/main.py
+
+# Run with custom paths and specific output
+uv run src/main.py my_barcodes.csv my_orders.csv --output ./data/result.csv
 ```
 
-### 2. `uv`
+#### 2. Using Docker
+```bash
+# Build the image
+docker build -t tiqets-assignment .
 
-Make sure you have `uv` installed, if not follow the installation here: https://docs.astral.sh/uv/getting-started/installation/
-
-Then sync `uv` dependencies
-```sh
-$ uv sync
+# Run and save results to local disk (Volume Mount)
+docker run --rm -v "$(pwd)/data:/app/data" tiqets-assignment
 ```
 
-Once dependencies are installed: 
-```sh 
-$ uv run src/main.py --output ./data/out.csv
-```
-(run with default arguments)
+---
 
-To see the help message use the `--help`:
-```sh
-$ uv run src/main.py --help                 
-usage: Renan Backend Assignment [-h] -o OUTPUT [barcode_csv] [orders_csv]
-
-positional arguments:
-  barcode_csv          path to barcode CSV (default: ./data/barcodes.csv)
-  orders_csv           path to order CSV (default: ./data/orders.csv)
-
-options:
-  -h, --help           show this help message and exit
-  -o, --output OUTPUT  File where the result will be written to.
-```
-
-## Tests 
-Tests are located on `./src/tests` and can be running using the command below:
-```sh
-uv run pytest
-```
-
-## Notes
-- The `devenv.*` files are my local dev machine related and doesn't affect anything on the script running process.
-- Tests focus on behaviour rather than code coverage.
-
-
-
-
+## Documentation & Bonus Points
+- **Testing**: Run `PYTHONPATH=src uv run pytest src/tests/` to verify business logic.
+- **Data Model**: Relational schema and indexing strategies in [docs/data_model/schema.sql](docs/data_model/schema.sql).
+- **Deployment**: Standard production deployment plan in [docs/deploy.md](docs/deploy.md).

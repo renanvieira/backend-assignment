@@ -14,24 +14,29 @@ class MalformedCSVFile(Exception):
 def process_csv_files(
     barcodes: csv.DictReader, orders: csv.DictReader, output_path: str
 ):
+    barcode_required_headers = ["barcode", "order_id"]
+    order_required_headers = ["order_id", "customer_id"]
+
     if not barcodes.fieldnames:
-        logger.info("barcode csv fieldnames: %s", barcodes.fieldnames)
-        raise MalformedCSVFile("Barcode CSV is not in a valid format.")
+        raise MalformedCSVFile(
+            f"Barcode CSV is missing required columns: {barcode_required_headers}"
+        )
 
     if not orders.fieldnames:
-        logger.info("order csv fieldnames: %s", barcodes.fieldnames)
-        raise MalformedCSVFile("Orders CSV is not in a valid format.")
+        raise MalformedCSVFile(
+            f"Orders CSV is missing required columns: {order_required_headers}"
+        )
 
     try:
         order_barcode_map, unused_barcodes = process_barcodes(barcodes)
         order_customer_map, top5_customers = process_orders(orders, order_barcode_map)
     except KeyError as err:
-        raise MalformedCSVFile("CSV is not in the exepcted format") from err
+        raise MalformedCSVFile("CSV is not in the expected format") from err
 
-    print(f"- Unused Barcodes: {unused_barcodes}")
-    print("- TOP5 customers:")
+    logger.info("Unused Barcodes: %d", unused_barcodes)
+    logger.info("TOP 5 Customers:")
     for k, v in top5_customers.items():
-        print(f" - Customer ID: {k} - {v} Tickets")
+        logger.info(" - Customer ID: %s - %d Tickets", k, v)
 
     with open(output_path, "w+") as fp:
         writer = csv.writer(fp)
@@ -39,7 +44,7 @@ def process_csv_files(
         for k, v in order_customer_map.items():
             writer.writerow([v["customer_id"], k, f"[{','.join(v['barcodes'])}]"])
 
-    print(f"CSV file written to '{output_path}'")
+    logger.info("CSV file written to '%s'", output_path)
 
 
 def process_orders(
