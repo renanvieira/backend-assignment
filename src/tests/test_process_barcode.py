@@ -28,6 +28,7 @@ def test_process_barcode_ignores_duplicates():
 
 def test_process_barcode_counts_unused_correctly():
     csv_content = "barcode,order_id\n111,1\n222,\n333,"
+    csv_content = "barcode,order_id\n111,1\n222,\n333,"  # Two unused
     f = io.StringIO(csv_content)
     reader = csv.DictReader(f)
 

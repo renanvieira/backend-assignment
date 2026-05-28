@@ -29,12 +29,31 @@ def test_process_orders_skips_invalid_orders():
 
 
 def test_process_orders_aggregates_top_customers():
-    csv_content = "order_id,customer_id\n1,10\n2,10\n3,20"
+    # Customer 10 has two orders, total 3 barcodes
+    csv_content = "order_id,customer_id\n1,C1\n2,C2\n3,C3\n4,C4\n5,C5\n6,C6\n"
     f = io.StringIO(csv_content)
     reader = csv.DictReader(f)
-    barcode_map = {"1": ["B1", "B2"], "2": ["B3"], "3": ["B4"]}
 
-    _, top5 = process_orders(reader, barcode_map)
+    dummy_barcode_map = {
+        "1": ["B1"] * 10,
+        "2": ["B2"] * 9,
+        "3": ["B3"] * 8,
+        "4": ["B4"] * 7,
+        "5": ["B5"] * 6,
+        "6": ["B6"] * 11,
+    }
 
-    assert top5["10"] == 3
-    assert top5["20"] == 1
+    _, top5 = process_orders(reader, dummy_barcode_map)
+
+    assert len(top5) == 5
+
+    top5_items = list(top5.items())
+
+    # Assert the top5 is correctly ordered
+    assert top5_items[0][1] == 11
+    assert top5_items[1][1] == 10
+    assert top5_items[2][1] == 9
+    assert top5_items[3][1] == 8
+    assert top5_items[4][1] == 7
+
+    assert "C5" not in top5

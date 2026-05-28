@@ -33,18 +33,24 @@ def process_csv_files(
     except KeyError as err:
         raise MalformedCSVFile("CSV is not in the expected format") from err
 
-    logger.info("Unused Barcodes: %d", unused_barcodes)
-    logger.info("TOP 5 Customers:")
-    for k, v in top5_customers.items():
-        logger.info(" - Customer ID: %s - %d Tickets", k, v)
+    print("-------------------")
+    print(f"- Unused Barcodes: {unused_barcodes}")
+    print("-------------------")
+    print("- TOP5 Customers:")
+    print("customer_id,number_of_tickets")
 
+    for k, v in top5_customers.items():
+        print(f"{k},{v}")
+
+    print("-------------------")
     with open(output_path, "w+") as fp:
         writer = csv.writer(fp)
         writer.writerow(["customer_id", "order_id", "barcodes"])
         for k, v in order_customer_map.items():
             writer.writerow([v["customer_id"], k, f"[{','.join(v['barcodes'])}]"])
 
-    logger.info("CSV file written to '%s'", output_path)
+    print(f"CSV file written to '{output_path}'")
+    print("-------------------")
 
 
 def process_orders(
