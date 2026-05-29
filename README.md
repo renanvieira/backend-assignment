@@ -78,7 +78,7 @@ Another option, is refactoring the main.py to use Celery with Beat to have a con
 ---
   
 # [Data Model](./docs/data_model)
-The data model focuses on the relationships required by the assignment; for a production system, standard PII (names, emails), pricing (discount) and auditing columns would be expanded.
+The data model focuses on the relationships required by the assignment; for a production system, standard PII (names, emails), pricing (amount, discount) would be expanded.
 
 
 ```mermaid
@@ -93,8 +93,6 @@ erDiagram
         int id PK
         int customer_id FK
         text order_number UK
-        int price_amount
-        text status
         timestamp created_at
         timestamp updated_at
     }
@@ -103,7 +101,6 @@ erDiagram
         int id PK
         int order_id FK
         text barcode
-        text status
         timestamp created_at
         timestamp updated_at
     }
@@ -117,15 +114,13 @@ erDiagram
 CREATE TABLE customers (
     id INT PRIMARY KEY,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP,
+    updated_at TIMESTAMP
 );
 
 CREATE TABLE orders (
     id INT PRIMARY KEY,
     customer_id INT NOT NULL,
     order_number TEXT UNIQUE,
-    price_amount BIGINT NOT NULL CONSTRAINT order_price_positive CHECK (price_amount > 0),
-    status TEXT
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP,
 
@@ -136,9 +131,9 @@ CREATE TABLE tickets (
     id INT PRIMARY KEY,
     order_id INT,
     barcode TEXT NOT NULL,
-    status TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP,
+
     CONSTRAINT fk_order FOREIGN KEY (order_id) REFERENCES orders(id),
     CONSTRAINT uq_order_barcode UNIQUE (order_id, barcode)
 );
