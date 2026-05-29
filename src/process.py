@@ -54,7 +54,7 @@ def process_csv_files(
 
 
 def process_orders(
-    orders_csv: csv.DictReader, barcodes: dict[str, list[str]]
+    orders_csv: csv.DictReader, barcodes: dict[str, set[str]]
 ) -> tuple[dict[str, typing.Any], dict[str, int]]:
 
     seen = set()
@@ -90,24 +90,21 @@ def process_orders(
     return (output, top5_customers)
 
 
-def process_barcodes(dict_csv: csv.DictReader) -> tuple[dict[str, list[str]], int]:
-    seen = set()
-    order_barcode = defaultdict(list)
+def process_barcodes(dict_csv: csv.DictReader) -> tuple[dict[str, set[str]], int]:
+    order_barcode = defaultdict(set)
     unused_barcodes = 0
     for row in dict_csv:
         barcode = row["barcode"]
         order_id = row["order_id"]
 
-        if barcode in seen:
-            logger.error("Duplicated barcode: %s", barcode)
-            continue
-        else:
-            seen.add(barcode)
-
         if not order_id:
             unused_barcodes += 1
             continue
 
-        order_barcode[order_id].append(barcode)
+        if barcode in order_barcode[order_id]:
+            logger.error("Duplicated barcode '%s' in order '%s'", barcode, order_id)
+            continue
+
+        order_barcode[order_id].add(barcode)
 
     return dict(order_barcode), unused_barcodes

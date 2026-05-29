@@ -48,6 +48,8 @@ docker build -t tiqets-assignment .
 docker run --rm -v "/tmp/backend_assignment/data:/app/data" tiqets-assignment
 ```
 
+There is a output file example on [./data/output.csv](./data/output.csv).
+
 ---
 
 ## Testing
@@ -100,7 +102,7 @@ erDiagram
     tickets {
         int id PK
         int order_id FK
-        text barcode UK
+        text barcode
         text status
         timestamp created_at
         timestamp updated_at
@@ -132,12 +134,13 @@ CREATE TABLE orders (
 
 CREATE TABLE tickets (
     id INT PRIMARY KEY,
-    order_id INT UNIQUE,
+    order_id INT,
     barcode TEXT NOT NULL,
     status TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP,
-    CONSTRAINT fk_order FOREIGN KEY (order_id) REFERENCES orders(id)
+    CONSTRAINT fk_order FOREIGN KEY (order_id) REFERENCES orders(id),
+    CONSTRAINT uq_order_barcode UNIQUE (order_id, barcode)
 );
 
 CREATE INDEX idx_orders_customer_id ON orders(customer_id);
