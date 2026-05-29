@@ -59,18 +59,18 @@ uv run pytest src/tests/
 ---
 # Deployment Plan
 
-**Docker Build:**
+## **Docker Build:**
 ```bash
 docker build -t tiqets-assignment .
 ```
 Once image is build it can be deployed on any containarized environment.
 If needed to run on a VM/baremetal infrastructure, we can follow the same steps inside the Dockerfile to setup the script.
 
-**Scheduling:**
+## **Scheduling:**
 Run via Cron or Systemd Timer. Alternatevily, the docker image can be used by an orchestrator with scheduling (k8s cronjob, AWS ECS).
 Another option, is refactoring the main.py to use Celery with Beat to have a consistent scheduling or react from messages on a queue.
 
-**Monitoring**
+## **Monitoring**
 - The script exits with code `1` on failure; All errors are logged to `stderr`, which makes log collection easier for monitoring tools like APMs.
 
 ---
@@ -142,9 +142,3 @@ CREATE TABLE tickets (
 
 CREATE INDEX idx_orders_customer_id ON orders(customer_id);
 ```
-
-
-# AI Disclaimer
-- Polish documentation
-- Explore edge cases not covered by tests
-
