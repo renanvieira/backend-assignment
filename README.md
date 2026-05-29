@@ -74,36 +74,74 @@ Another option, is refactoring the main.py to use Celery with Beat to have a con
 - The script exits with code `1` on failure; All errors are logged to `stderr`, which makes log collection easier for monitoring tools like APMs.
 
 ---
-# Data Model
+  
+# [Data Model](./docs/data_model)
+The data model focuses on the relationships required by the assignment; for a production system, standard PII (names, emails), pricing (discount) and auditing columns would be expanded.
 
-!(Entity Relatioship Diagram)[./docs/data_model/schema.png)
+
+```mermaid
+erDiagram
+    customers {
+        int id PK
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    orders {
+        int id PK
+        int customer_id FK
+        text order_number UK
+        int price_amount
+        text status
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    tickets {
+        int id PK
+        int order_id FK
+        text barcode UK
+        text status
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    customers ||--o{ orders : "places"
+    orders ||--o{ tickets : "contains"
+```
 
 ## DDL
 ```sql
 CREATE TABLE customers (
     id INT PRIMARY KEY,
-    -- In a real system, we would have name, email, etc.
-    email VARCHAR(255) UNIQUE
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP,
 );
 
 CREATE TABLE orders (
     id INT PRIMARY KEY,
     customer_id INT NOT NULL,
+    order_number TEXT UNIQUE,
+    price_amount BIGINT NOT NULL CONSTRAINT order_price_positive CHECK (price_amount > 0),
+    status TEXT
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP,
+
     CONSTRAINT fk_customer FOREIGN KEY (customer_id) REFERENCES customers(id)
 );
 
-CREATE TABLE barcodes (
-    barcode VARCHAR(255) PRIMARY KEY,
+CREATE TABLE tickets (
+    id INT PRIMARY KEY,
     order_id INT UNIQUE,
+    barcode TEXT NOT NULL,
+    status TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP,
     CONSTRAINT fk_order FOREIGN KEY (order_id) REFERENCES orders(id)
 );
 
 CREATE INDEX idx_orders_customer_id ON orders(customer_id);
 ```
-
-
 
 
 # AI Disclaimer
