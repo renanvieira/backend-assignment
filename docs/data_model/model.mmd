@@ -2,20 +2,26 @@ erDiagram
     customers {
         int id PK
         timestamp created_at
+        timestamp updated_at
     }
 
     orders {
         int id PK
         int customer_id FK
         text order_number UK
+        int price_amount
+        text status
         timestamp created_at
+        timestamp updated_at
     }
 
     tickets {
         int id PK
         int order_id FK
         text barcode UK
+        text status
         timestamp created_at
+        timestamp updated_at
     }
 
     customers ||--o{ orders : "places"
